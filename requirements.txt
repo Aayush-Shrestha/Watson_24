@@ -4,3 +4,4 @@ pandas
 transformers
 pytesseract
 opencv-python-headless
+accelerate>=0.26.0
