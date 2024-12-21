@@ -1,8 +1,6 @@
-torch
+torch==2.0.1
 streamlit
 pandas
-tempfile
-os
 transformers
 ocr
 pytesseract
