@@ -6,23 +6,11 @@ import torch
 from transformers import pipeline
 from ocr import extract_text_from_image
 
-hf_token = os.getenv("HF_TOKEN")
+pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", torch_dtype=torch.bfloat16, device_map="auto")
 
-# Initialize the Hugging Face pipeline with the token
-pipe = pipeline(
-    "text-generation", 
-    model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", 
-    torch_dtype=torch.bfloat16, 
-    device_map="auto", 
-    use_auth_token=hf_token
-)
-
-# Load CSV files for interactions and allergies
 csv_file = "interactions.csv"
 data_intr = pd.read_csv(csv_file)
 unique_drug_names = data_intr["Drug_Name"].unique()
-
-# Handle allergies CSV file with exception handling
 try:
     data_aller = pd.read_csv("allergies.csv")  # Assuming you have this CSV file with a 'food' column
     data_aller["food_normalized"] = data_aller["food"].str.lower()  # Normalize for matching
@@ -34,7 +22,6 @@ def match_allergy(row):
     food_words = set(row["food_normalized"].split())
     return not ocr_tokens.isdisjoint(food_words)
 
-# Streamlit UI configuration
 st.set_page_config(
     page_title="SafeConsume",
     page_icon="⚕️",
@@ -54,14 +41,12 @@ if st.button("Submit"):
     st.write("Allergy Input:", text_input2)
     st.image(uploaded_image, caption="Uploaded Image", use_container_width=True)
     st.write("-" * 50)
-
     if uploaded_image is not None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
             tmp_file.write(uploaded_image.getvalue())
             temp_image_path = tmp_file.name
 
         extracted_text = extract_text_from_image(temp_image_path)
-        
         prompt = {
             "role": "system",
             "content": "You are a helpful assistant who separates ingredients from text. Just reply with the list and nothing else"
@@ -77,7 +62,9 @@ if st.button("Submit"):
 
         if "INGREDIENTS:" in generated_text:
             ingredients_text = generated_text.split("INGREDIENTS:")[-1].strip()
-            cleaned_ingredients = [ingredient.strip() for ingredient in ingredients_text.split(",")]
+            cleaned_ingredients = [
+                ingredient.strip() for ingredient in ingredients_text.split(",")
+            ]
         else:
             st.warning("No ingredients found in the generated text.")
 
@@ -169,6 +156,21 @@ if st.button("Submit"):
         else:
             st.warning("No allergens found in the OCR ingredient list.")
         st.write("-" * 50)
+        # st.write("*Relevant Information Source*")
+        # if not matched_allergens.empty:
+        #     st.write("**Matching Allergens:**")
+        #     for _, row in matched_allergens.iterrows():
+        #         st.write(f"**Ingredient:** {row['food']}")
+        #         st.write(f"**Allergy Info:** {row['allergy']}")
+        #         st.write("-" * 50)
+
+        # if not matched_intr.empty:
+        #     st.write("**Drug-Food Interaction:**")
+        #     for _, row in matched_intr.iterrows():
+        #         st.write(f"**Ingridient:** {row['Food_Herb_Name']}")
+        #         st.write(f"**Effect:** {row['Effect']}")
+        #         st.write(f"**Conclusion:** {row['Conclusion']}")
+        #         st.write("-" * 50)
 
         os.remove(temp_image_path)
     else:
