@@ -3,4 +3,4 @@ streamlit
 pandas
 transformers
 pytesseract
-opencv-python
+opencv-python-headless
