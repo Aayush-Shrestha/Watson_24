@@ -10,8 +10,8 @@ token = os.getenv("HF_TOKEN")
 
 model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=token)
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=token)
+model = AutoModelForCausalLM.from_pretrained(model_name, token=token)
+tokenizer = AutoTokenizer.from_pretrained(model_name, token=token)
 
 pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0)
 
