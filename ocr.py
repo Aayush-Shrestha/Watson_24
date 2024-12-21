@@ -2,9 +2,12 @@ import pytesseract
 from PIL import Image
 import cv2
 import re
-
+import os
 # Set the Tesseract command path
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+if os.name == "nt":  # For local development on Windows
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:  # For deployment on Streamlit Cloud (Linux)
+    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 def extract_text_from_image(image_path):
     """Extract text from an image using Tesseract OCR."""
     image = cv2.imread(image_path)
