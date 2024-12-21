@@ -2,5 +2,4 @@ torch
 streamlit
 pandas
 transformers
-ocr
 pytesseract
