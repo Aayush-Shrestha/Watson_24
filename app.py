@@ -3,19 +3,17 @@ import pandas as pd
 import tempfile
 import os
 import torch
-from transformers import pipeline
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 from ocr import extract_text_from_image
 
-hf_token = os.getenv("HF_TOKEN")
+token = os.getenv("HF_TOKEN")
 
-# Initialize the Hugging Face pipeline with the token
-pipe = pipeline(
-    "text-generation", 
-    model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", 
-    torch_dtype=torch.bfloat16, 
-    device_map="auto", 
-    use_auth_token=hf_token
-)
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=token)
+tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=token)
+
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0)
 
 # Load CSV files for interactions and allergies
 csv_file = "interactions.csv"
