@@ -1,0 +1,30 @@
+import asyncio
+from pyppeteer import launch
+
+async def main():
+    browser = await launch(headless=False)  # Set headless=False if you want to see the browser
+    page = await browser.newPage()
+
+    # Set the User-Agent and other headers to mimic a real browser
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+
+    await page.goto('https://go.drugbank.com/food-interaction-checker')
+
+    # Wait for the page to load
+    await page.waitForSelector('input[type="text"]')
+
+    # Perform the actions like typing and clicking
+    await page.type('input[type="text"]', 'tylenol')
+    await page.click('button[type="submit"]')
+
+    # Wait for results to appear
+    await page.waitForSelector('.results-class')  # Replace with the actual result class
+
+    # Extract the content
+    content = await page.content()
+
+    print(content)
+
+    await browser.close()
+
+asyncio.get_event_loop().run_until_complete(main())
