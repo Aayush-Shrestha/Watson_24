@@ -1,0 +1,8 @@
+torch
+streamlit
+pandas
+tempfile
+os
+transformers
+ocr
+pytesseract
