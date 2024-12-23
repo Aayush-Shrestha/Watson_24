@@ -26,7 +26,7 @@ def clean_ingredients(text):
     else:
         return []
 
-image_path = 'try.jpg'  
+image_path = 'try3.jpg'  
 extracted_text = extract_text_from_image(image_path)
 ingredients = clean_ingredients(extracted_text)
 
